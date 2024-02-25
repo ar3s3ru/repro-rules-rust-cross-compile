@@ -1,0 +1,21 @@
+# bazel
+bazel-*
+.bazelrc.user
+
+# rust
+target
+
+# misc
+.DS_Store
+
+# local env files
+.env*.local
+.direnv
+
+# vscode java bazel plugin
+.eclipse
+.ijwb
+
+# nix
+result
+result-bin

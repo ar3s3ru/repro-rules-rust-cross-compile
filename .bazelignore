@@ -1,0 +1,9 @@
+bazel-bin
+bazel-repro-rules-rust-cross-compile
+bazel-out
+bazel-testlogs
+bazel-genfiles
+
+.idea/
+.ijwb/
+.direnv/

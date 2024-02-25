@@ -1,0 +1,15 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+package(default_visibility = ["//visibility:public"])
+
+buildifier(
+    name = "buildifier.check",
+    # By default the diffs appear on stdout, but the rest of Buildifier appears on
+    # stderr making it harder to capture in Workflows, so we do a cheeky redirect here in the diff_command.
+    diff_command = "diff -U 5 >&2",
+    exclude_patterns = [
+        "./.git/*",
+    ],
+    lint_mode = "warn",
+    mode = "diff",
+)

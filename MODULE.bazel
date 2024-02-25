@@ -1,0 +1,54 @@
+"Reproduces the error in rules_rust 0.39+ with cross compilation."
+
+module(name = "repro-rules-rust-cross-compile")
+
+bazel_dep(name = "platforms", version = "0.0.8")
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "buildifier_prebuilt", version = "6.4.0")
+bazel_dep(name = "rules_rust", version = "0.39.0")
+bazel_dep(name = "hermetic_cc_toolchain", version = "3.0.1")
+
+# NOTE: for some reason, v0.39.0 is not working properly,
+# but the most updated commits on the main branch are.
+#
+# Retry this once a new version is released.
+git_override(
+    module_name = "rules_rust",
+    commit = "777f3e5c5d280b14d37bb7574a88f1cbfb3f8d46",
+    remote = "https://github.com/bazelbuild/rules_rust",
+)
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2021",
+    versions = ["1.76.0"],
+    # NOTE: For cross-compilation to deployment target environments.
+    extra_target_triples = [
+        "aarch64-unknown-linux-gnu",
+        "x86_64-unknown-linux-gnu",
+    ],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains("@rust_toolchains//:all")
+
+# Hermetic toolchains used for Rust cross-compilation.
+toolchains = use_extension("@hermetic_cc_toolchain//toolchain:ext.bzl", "toolchains")
+use_repo(toolchains, "zig_sdk")
+
+register_toolchains(
+    "@zig_sdk//toolchain:linux_amd64_gnu.2.38",
+    "@zig_sdk//toolchain:linux_arm64_gnu.2.38",
+)
+
+crate = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "//:Cargo.lock",
+    manifests = [
+        "//:Cargo.toml",
+        "//repro-app:Cargo.toml",
+        "//repro-lib:Cargo.toml",
+    ],
+)
+use_repo(crate, "crates")

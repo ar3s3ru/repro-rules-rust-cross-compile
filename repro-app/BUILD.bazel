@@ -1,0 +1,52 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+rust_binary(
+    name = "repro-app",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "repro_app",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        proc_macro = True,
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//repro-lib",
+    ] + all_crate_deps(
+        normal = True,
+    ),
+)
+
+rust_binary(
+    name = "repro-app_linux-amd64",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "repro_app",
+    edition = "2021",
+    platform = "//tools/bazel/platforms:linux_amd64",
+    proc_macro_deps = all_crate_deps(
+        proc_macro = True,
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//repro-lib",
+    ] + all_crate_deps(
+        normal = True,
+    ),
+)
+
+rust_binary(
+    name = "repro-app_linux-arm64",
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "repro_app",
+    edition = "2021",
+    platform = "//tools/bazel/platforms:linux_arm64",
+    proc_macro_deps = all_crate_deps(
+        proc_macro = True,
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//repro-lib",
+    ] + all_crate_deps(
+        normal = True,
+    ),
+)

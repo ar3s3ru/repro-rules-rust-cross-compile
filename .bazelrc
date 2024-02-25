@@ -1,0 +1,25 @@
+# This is a Bazel module workspace.
+common --enable_bzlmod
+
+# Zig hermetic compiler requries some pointing to the cache folder.
+# Source: https://github.com/uber/hermetic_cc_toolchain/releases/tag/v3.0.0
+common --enable_platform_specific_config
+build --incompatible_enable_cc_toolchain_resolution
+build:linux --sandbox_add_mount_pair=/tmp
+build:macos --sandbox_add_mount_pair=/var/tmp
+build:windows --sandbox_add_mount_pair=C:\Temp
+
+# Stuff from hermetic_cc_toolchain bzlmod example.
+# If these don't make sense, remove them.
+test --test_output=errors
+build --verbose_failures
+build --worker_sandboxing
+build --experimental_reuse_sandbox_directories
+build --experimental_output_directory_naming_scheme=diff_against_baseline
+
+# Collect code coverage during tests.
+# Report warnings for tests that take a certain amount of time.
+test --test_verbose_timeout_warnings
+test --collect_code_coverage
+test --combined_report=lcov
+test --experimental_fetch_all_coverage_outputs
